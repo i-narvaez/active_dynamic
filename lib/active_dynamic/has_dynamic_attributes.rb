@@ -5,10 +5,9 @@ module ActiveDynamic
     included do
       has_many :active_dynamic_attributes,
                class_name: 'ActiveDynamic::Attribute',
-               autosave: true,
                dependent: :destroy,
                as: :customizable
-      before_save :save_dynamic_attributes
+      after_save :save_dynamic_attributes
     end
 
     class_methods do
@@ -129,11 +128,8 @@ module ActiveDynamic
       dynamic_attributes.each do |field|
         next unless _custom_fields[field.name]
         attr = active_dynamic_attributes.find_or_initialize_by(field.as_json)
-        if persisted?
-          attr.update(value: _custom_fields[field.name])
-        else
-          attr.assign_attributes(value: _custom_fields[field.name])
-        end
+        attr.assign_attributes(value: _custom_fields[field.name])
+        attr.save
       end
     end
 
