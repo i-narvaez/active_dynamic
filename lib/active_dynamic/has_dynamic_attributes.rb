@@ -127,7 +127,7 @@ module ActiveDynamic
     def save_dynamic_attributes
       dynamic_attributes.each do |field|
         next unless _custom_fields[field.name]
-        attr = active_dynamic_attributes.find_or_initialize_by(field.as_json)
+        attr = active_dynamic_attributes.find_or_initialize_by(field.as_json.except(:current_shard))
         attr.assign_attributes(value: _custom_fields[field.name])
         attr.save
       end
